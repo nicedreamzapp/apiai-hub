@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>APIAI Hub • Pro iOS Dev (Dynamic Projects)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-blue: #00D4FF;
+      --primary-green: #00FF88;
+      --primary-purple: #BB6BD9;
+      --primary-teal: #5AC8FA;
+      --primary-cyan: #00FFFF;
+      --primary-violet: #8A2BE2;
+      --primary-neon-blue: #1E90FF;
+      --primary-emerald: #50C878;
+      --primary-gray: #8E8E93;
+      --primary-orange: #FF9500;
+      --primary-pink: #FF2D92;
+      --primary-yellow: #FFD60A;
+
+      --bg-primary: rgba(15, 25, 45, 0.95);
+      --bg-secondary: rgba(20, 30, 50, 0.9);
+      --bg-tertiary: rgba(25, 35, 55, 0.85);
+
+      --text-primary: #FFFFFF;
+      --text-secondary: #E0E6ED;
+      --text-tertiary: #B0B8C4;
+
+      --shadow-light: 0 1px 3px rgba(0, 0, 0, 0.3);
+      --shadow-medium: 0 4px 12px rgba(0, 0, 0, 0.4);
+      --shadow-heavy: 0 8px 25px rgba(0, 0, 0, 0.5);
+
+      --border-radius: 12px;
+      --border-radius-large: 20px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: radial-gradient(1200px 600px at 15% 10%, rgba(0,212,255,0.15), transparent 60%),
+                  radial-gradient(1000px 500px at 85% 20%, rgba(255,45,146,0.12), transparent 60%),
+                  linear-gradient(135deg, #1a1a2e 0%, #16213e 25%, #0f3460 50%, #533483 75%, #1a1a2e 100%);
+      background-size: 400% 400%;
+      animation: gradientShift 18s ease infinite;
+      min-height: 100vh;
+      color: var(--text-primary);
+      line-height: 1.6;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .container { max-width: 1400px; margin: 0 auto; padding: 16px; }
+
+    /* Top App Bar */
+    .topbar {
+      position: sticky; top: 0; z-index: 20; margin-bottom: 16px;
+      display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center;
+      background: rgba(10, 14, 28, 0.5); backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.08); padding: 12px 16px; border-radius: 14px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.25);
+    }
+    .brand { display:flex; align-items:center; gap:10px; }
+    .brand h1 { font-size: 1.3rem; letter-spacing:-0.01em; }
+    .brand h1 span { opacity:0.85; font-weight:500; }
+    .quick-actions { display:flex; gap:8px; }
+    .chip {
+      padding: 6px 10px; border-radius: 999px; font-size: .75rem; border:1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06); cursor:pointer; user-select:none; transition: .2s ease;
+    }
+    .chip:hover { transform: translateY(-1px); background: rgba(255,255,255,.10); }
+
+    .searchbar { position: relative; }
+    .searchbar input {
+      width: 280px; padding: 10px 36px 10px 12px; border-radius: 10px; border:1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.06); color: #fff; outline: none;
+    }
+    .kbd { position:absolute; right:8px; top:50%; transform:translateY(-50%);
+      font-size:.7rem; opacity:.7; border:1px solid rgba(255,255,255,.2); padding:2px 6px; border-radius:6px; }
+
+    /* Header */
+    .header { margin: 12px 0 18px; text-align: center; }
+    .header .subtitle { opacity:.9; font-size:.95rem; }
+    .header .description { opacity:.7; font-size:.85rem; }
+
+    /* Top Section */
+    .top-section { display:grid; grid-template-columns: 1fr 2fr; gap: 20px; margin-bottom: 20px; }
+
+    /* Panel */
+    .panel {
+      background: var(--bg-primary); backdrop-filter: blur(20px);
+      border-radius: var(--border-radius); border: 1px solid rgba(0, 212, 255, 0.25);
+      padding: 16px; box-shadow: var(--shadow-medium);
+    }
+
+    .project-header, .stats-header { display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+    .project-header h2, .stats-header h2 {
+      font-size: 1.05rem; font-weight: 600; color: var(--text-primary);
+      background: rgba(0,0,0,.4); padding: 4px 8px; border-radius: 6px; border:1px solid rgba(0,0,0,.6);
+    }
+
+    .project-selector { display:flex; gap: 10px; flex-wrap: wrap; }
+    .project-selector select {
+      flex: 1; min-width: 200px; padding: 10px 16px; border-radius: 10px; border: 1px solid rgba(0,212,255,.3);
+      background: rgba(25,35,55,.9); color: #fff; outline: none; transition:.25s;
+      appearance: none; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2300D4FF' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e"); background-position: right 10px center; background-repeat:no-repeat; background-size:14px; padding-right: 34px;
+    }
+    .project-selector select:focus { border-color: var(--primary-blue); box-shadow: 0 3px 12px rgba(0,212,255,.35); transform: translateY(-1px); }
+    .project-info { margin-top:8px; padding:8px 12px; background: rgba(0,212,255,.12); border-left:3px solid var(--primary-blue); border-radius:6px; }
+    .project-path { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono','Courier New', monospace; font-size: .72rem; opacity: .9; }
+
+    /* Stats */
+    .stats-grid { display:grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+    .stat-card { position:relative; background: var(--bg-secondary); border-radius: 12px; border:1px solid rgba(0,212,255,.25); padding: 12px; overflow: hidden; }
+    .stat-card .label { font-size: .75rem; text-transform: uppercase; letter-spacing:.3px; opacity:.9; display:inline-flex; align-items:center; gap:6px; }
+    .stat-card .value { font-size: 1.4rem; font-weight: 700; display:block; margin-top:4px; }
+    .spark { width: 100%; height: 40px; display:block; margin-top:6px; filter: drop-shadow(0 2px 6px rgba(0,0,0,.35)); }
+
+    /* Toolbar */
+    .toolbar { display:flex; align-items:center; justify-content: space-between; margin: 8px 0 14px; }
+    .filters { display:flex; gap: 8px; flex-wrap: wrap; }
+    .pill { border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.06); border-radius: 999px; padding: 6px 10px; font-size: .8rem; cursor: pointer; user-select:none; }
+    .pill.active { background: linear-gradient(135deg, rgba(0,212,255,.25), rgba(138,43,226,.25)); border-color: rgba(0,212,255,.5); }
+
+    /* Jobs */
+    .jobs-section { display:grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .job-group { position:relative; background: var(--bg-primary); border-radius: 12px; border: 1px solid rgba(0,212,255,.28); padding: 12px; box-shadow: var(--shadow-medium); overflow: visible; }
+    .job-group.collapsed .job-items { display:none; }
+    .group-header { display:flex; align-items:center; justify-content: space-between; cursor: pointer; }
+    .group-title { display:flex; align-items:center; gap:10px; }
+    .count-badge { font-size: .75rem; padding: 2px 8px; border-radius: 999px; border:1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.08); }
+
+    .group-description { color: var(--text-secondary); font-size: .8rem; margin: 8px 0 12px; padding-left: 28px; }
+
+    .job-item { background: var(--bg-secondary); border-radius: 10px; border:1px solid rgba(0,212,255,.22); padding: 12px; margin-bottom: 10px; transition: .2s; overflow: visible; }
+    .job-item:hover { transform: translateY(-1px); border-color: rgba(0,212,255,.45); background: var(--bg-tertiary); }
+
+    /* Header layout so Instructions never shrinks/clips */
+    .job-header { display:flex; align-items:center; gap:10px; }
+    .job-title { flex:1; min-width:0; display:flex; align-items:center; gap:8px; font-weight: 600; }
+    .instructions-btn { flex:0 0 auto; white-space:nowrap; max-width:max-content; padding:6px 10px; border-radius:999px; border:1px solid rgba(255,255,255,.16); background: rgba(255,255,255,.08); }
+
+    .job-status-dot { width: 10px; height: 10px; border-radius: 999px; box-shadow: 0 0 10px currentColor; }
+    .s-idle { color: var(--text-tertiary); }
+    .s-running { color: var(--primary-blue); animation: pulse 1.5s infinite; }
+    .s-success { color: var(--primary-green); }
+    .s-error { color: var(--primary-purple); }
+    @keyframes pulse { 0%,100%{ opacity:1; transform:scale(1);} 50%{opacity:.7; transform:scale(1.2);} }
+
+    .job-desc { color: var(--text-secondary); font-size: .86rem; margin-top: 4px; }
+
+    .progress { height: 6px; background: rgba(255,255,255,.08); border-radius: 999px; overflow: hidden; margin: 8px 0 4px; }
+    .progress > span { display:block; height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary-blue), var(--primary-cyan)); transition: width .25s ease; }
+
+    .progress-text { font-size: .75rem; color: var(--text-tertiary); text-align: center; margin-bottom: 8px; }
+
+    .job-actions { display:flex; gap: 8px; flex-wrap: wrap; }
+    .btn { padding: 6px 12px; border: none; border-radius: 8px; font-size: .8rem; font-weight: 600; cursor:pointer; transition: .2s; min-width: 84px; white-space: nowrap; }
+    .btn:hover { transform: translateY(-1px); filter: brightness(1.07); }
+    .btn:disabled { opacity:.6; cursor:not-allowed; }
+    .btn-primary { background: linear-gradient(135deg, var(--primary-blue), #4A90E2); color: #fff; }
+    .btn-secondary { background: rgba(255,255,255,.08); color: #fff; border: 1px solid rgba(255,255,255,.12); }
+    .btn-warning { background: linear-gradient(135deg, var(--primary-orange), #FF9F0A); color: #fff; }
+
+    /* avoid Safari clipping when using backdrop-filter */
+    .job-item, .job-group { -webkit-mask-image: none; }
+
+    /* Command Palette */
+    .palette { position: fixed; inset: 0; display:none; align-items: center; justify-content: center; z-index: 50; background: rgba(0,0,0,.45); backdrop-filter: blur(4px); }
+    .palette.open { display:flex; }
+    .palette-card { width: min(760px, 92vw); background: rgba(15,25,45,.98); border:1px solid rgba(255,255,255,.12); border-radius: 14px; overflow: hidden; box-shadow: 0 24px 80px rgba(0,0,0,.4); }
+    .palette-head { display:flex; align-items:center; gap:10px; padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .palette-head input { flex:1; background: transparent; border:none; outline:none; color:#fff; font-size: .98rem; }
+    .palette-body { max-height: 56vh; overflow:auto; }
+    .palette-section { padding: 10px 12px; }
+    .palette-section h4 { font-size: .8rem; opacity:.7; margin-bottom: 6px; }
+    .palette-item { display:flex; align-items:center; justify-content: space-between; gap: 10px; padding: 10px; border-radius: 10px; cursor: pointer; transition:.15s; }
+    .palette-item:hover, .palette-item.active { background: rgba(255,255,255,.06); }
+    .palette-item .left { display:flex; align-items:center; gap: 10px; }
+    .kbd-inline { font-size:.7rem; opacity:.75; border:1px solid rgba(255,255,255,.2); padding:2px 6px; border-radius:6px; }
+
+    /* Log/Instruction Modal */
+    .modal { position: fixed; inset: 0; display:none; z-index: 40; background: rgba(0,0,0,.6); backdrop-filter: blur(8px); }
+    .modal.open { display:flex; }
+    .modal-card { margin:auto; width: min(980px, 92vw); max-height: 80vh; overflow: hidden; display:flex; flex-direction: column;
+      background: rgba(30, 30, 30, 0.95); border: 1px solid rgba(255,255,255,.1); border-radius: 16px; box-shadow: var(--shadow-heavy);
+    }
+    .modal-head { display:flex; align-items:center; justify-content: space-between; padding: 14px 16px; border-bottom:1px solid rgba(255,255,255,.1); }
+    .modal-head h3 { margin:0; font-size: 1.1rem; }
+    .modal-body { padding: 14px 16px; overflow:auto; }
+    .log-output { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono','Courier New', monospace; font-size:.88rem; white-space: pre-wrap; color:#f8f8f2; background: rgba(0,0,0,.5); border:1px solid rgba(255,255,255,.1); border-radius: 10px; padding: 14px; }
+
+    /* Responsive */
+    @media (max-width: 1200px) { .jobs-section { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 900px) { .jobs-section { grid-template-columns: repeat(2, 1fr); } .top-section{ grid-template-columns:1fr; } }
+    @media (max-width: 600px) { .jobs-section { grid-template-columns: 1fr; } .searchbar input{ width: 100%; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Top App Bar -->
+    <div class="topbar">
+      <div class="brand">
+        <div style="font-size:1.25rem">🌟</div>
+        <h1>APIAI Hub • <span id="brandProjectName">Dynamic Dev</span></h1>
+      </div>
+      <div class="quick-actions">
+        <div class="chip" id="openPalette">⌘K Command</div>
+        <div class="chip" id="filterRunning">Show Running</div>
+        <div class="chip" id="toggleCollapse">Collapse All</div>
+      </div>
+      <div class="searchbar">
+        <input id="searchInput" placeholder="Search jobs or groups…"/>
+        <div class="kbd">⌘K</div>
+      </div>
+    </div>
+
+    <!-- Hero Header -->
+    <div class="header">
+      <div class="subtitle">🎯 Advanced iOS Development Pipeline ⚡</div>
+      <div class="description">⚙️ Build → 🔍 Analyze → 🚀 Deploy → 📈 Scale → 💫 Shine</div>
+    </div>
+
+    <!-- Top Section -->
+    <div class="top-section">
+      <!-- Project -->
+      <div class="panel">
+        <div class="project-header"><span style="font-size:1.1rem">📂</span><h2>Project Selection</h2></div>
+        <div class="project-selector">
+          <select id="projectSelect"><option value="">Loading projects… 🔄</option></select>
+          <button class="btn btn-primary" id="refreshProjectsBtn">Refresh</button>
+        </div>
+        <div class="project-info" id="projectInfo">
+          <div class="current-project" style="font-size:.8rem; opacity:.9;">Current Project:</div>
+          <div class="project-path" id="currentProjectPath">Loading… ⏳</div>
+        </div>
+      </div>
+
+      <!-- Stats + Sparklines -->
+      <div class="panel">
+        <div class="stats-header"><span style="font-size:1.1rem">📊</span><h2>System Performance</h2></div>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="label">🖥️ CPU</span>
+            <span class="value" id="cpuStat">--</span>
+            <canvas id="cpuSpark" class="spark"></canvas>
+          </div>
+          <div class="stat-card">
+            <span class="label">💾 Memory</span>
+            <span class="value" id="memStat">--</span>
+            <canvas id="memSpark" class="spark"></canvas>
+          </div>
+          <div class="stat-card">
+            <span class="label">💿 Disk</span>
+            <span class="value" id="diskStat">--</span>
+            <canvas id="diskSpark" class="spark"></canvas>
+          </div>
+          <div class="stat-card">
+            <span class="label">⏰ Uptime</span>
+            <span class="value" id="uptimeStat">--</span>
+            <canvas id="upSpark" class="spark"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Toolbar: Filters/Search (local) -->
+    <div class="toolbar">
+      <div class="filters">
+        <div class="pill active" data-filter="all">All</div>
+        <div class="pill" data-filter="running">Running</div>
+        <div class="pill" data-filter="success">Success</div>
+        <div class="pill" data-filter="error">Error</div>
+      </div>
+      <div class="filters">
+        <div class="pill" id="expandAll">Expand All</div>
+        <div class="pill" id="collapseAll">Collapse All</div>
+      </div>
+    </div>
+
+    <!-- Jobs -->
+    <div class="jobs-section" id="jobsSection"></div>
+  </div>
+
+  <!-- Command Palette -->
+  <div class="palette" id="palette">
+    <div class="palette-card">
+      <div class="palette-head">
+        <span>🔎</span>
+        <input id="paletteInput" placeholder="Type a command or job…" />
+        <div class="kbd-inline">Esc</div>
+      </div>
+      <div class="palette-body" id="paletteBody"></div>
+    </div>
+  </div>
+
+  <!-- Generic Modal (reused for Logs / Instructions) -->
+  <div class="modal" id="logModal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 id="logTitle">Job Log</h3>
+        <button class="btn btn-secondary" id="closeLog">Close</button>
+      </div>
+      <div class="modal-body">
+        <div class="log-output" id="logOutput">Loading log output… 🔄</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="instructionModal">
+    <div class="modal-card">
+      <div class="modal-head">
+        <h3 id="instructionTitle">Job Instructions</h3>
+        <button class="btn btn-secondary" id="closeInstruction">Close</button>
+      </div>
+      <div class="modal-body">
+        <div id="instructionBody">Loading instructions… 🔄</div>
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top: 12px;">
+          <button class="btn btn-secondary" id="cancelInstruction">Cancel ✖</button>
+          <button class="btn btn-primary" id="runFromInstructions">Run ▶️</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // --- State ---
+    let jobStatuses = {};   // { jobKey: 'idle'|'running'|'success'|'error' }
+    let currentJob = null;  // { key, group }
+    let availableProjects = [];
+    let jobsCache = {};     // Cache of /jobs response for palette and search
+    let currentProjectName = 'Dynamic Dev'; // Track current project name
+
+    // Sparkline history
+    const hist = { cpu: [], mem: [], disk: [], up: [] };
+    const maxPoints = 50;
+
+    // --- Helpers ---
+    const qs = (sel, root=document) => root.querySelector(sel);
+    const qsa = (sel, root=document) => Array.from(root.querySelectorAll(sel));
+
+    function clamp(n, min, max){ return Math.min(max, Math.max(min, n)); }
+
+    function formatUptime(seconds){
+      const days = Math.floor(seconds / 86400);
+      const hours = Math.floor((seconds % 86400) / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+      if (days > 0) return `${days}d ${hours}h`;
+      if (hours > 0) return `${hours}h ${minutes}m`;
+      return `${minutes}m`;
+    }
+
+    function notify(message){
+      const n = document.createElement('div');
+      n.style.cssText = `position:fixed;top:24px;right:24px;z-index:60;padding:14px 16px;border-radius:12px;`+
+        `background:linear-gradient(135deg, var(--primary-green), var(--primary-emerald));color:#fff;`+
+        `box-shadow:0 12px 30px rgba(0,0,0,.35);font-weight:600;max-width:420px`;
+      n.textContent = `✅ ${message}`;
+      document.body.appendChild(n);
+      setTimeout(()=>{ n.remove(); }, 4200);
+    }
+
+    function updateBrandName(projectName) {
+      currentProjectName = projectName;
+      qs('#brandProjectName').textContent = projectName;
+      document.title = `APIAI Hub • ${projectName}`;
+    }
+
+    function drawSpark(canvas, values){
+      const ctx = canvas.getContext('2d');
+      const w = canvas.width = canvas.clientWidth * devicePixelRatio;
+      const h = canvas.height = canvas.clientHeight * devicePixelRatio;
+      ctx.clearRect(0,0,w,h);
+      if (!values.length) return;
+      const min = Math.min(...values), max = Math.max(...values);
+      const dx = w / Math.max(1, values.length - 1);
+      ctx.lineWidth = 2 * devicePixelRatio;
+      const grad = ctx.createLinearGradient(0,0,w,0);
+      grad.addColorStop(0, '#00D4FF');
+      grad.addColorStop(1, '#8A2BE2');
+      ctx.strokeStyle = grad;
+      ctx.beginPath();
+      values.forEach((v, i) => {
+        const x = i * dx;
+        const y = h - ((v - min) / Math.max(1, (max - min))) * (h - 2*devicePixelRatio) - devicePixelRatio;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+    }
+
+    function pushHist(key, val){
+      const arr = hist[key];
+      arr.push(val);
+      if (arr.length > maxPoints) arr.shift();
+      const map = { cpu: 'cpuSpark', mem: 'memSpark', disk: 'diskSpark', up: 'upSpark' };
+      const canvas = qs('#' + map[key]);
+      if (canvas) drawSpark(canvas, arr);
+    }
+
+    // --- Loaders ---
+    async function loadProjects(){
+      try {
+        const res = await fetch('/projects');
+        if (!res.ok) throw new Error('projects failed');
+        const data = await res.json();
+        availableProjects = data.projects;
+        const select = qs('#projectSelect');
+        select.innerHTML = '';
+        
+        availableProjects.forEach(p => {
+          const opt = document.createElement('option');
+          opt.value = p.path;
+          opt.textContent = `📁 ${p.name}`;
+          if (p.path === data.current) {
+            opt.selected = true;
+            updateBrandName(p.name);
+          }
+          select.appendChild(opt);
+        });
+        
+        qs('#currentProjectPath').textContent = data.current;
+      } catch (e){
+        qs('#projectSelect').innerHTML = '<option value="">⚠ Error loading projects</option>';
+      }
+    }
+
+    async function switchProject(){
+      const select = qs('#projectSelect');
+      const newPath = select.value; if (!newPath) return;
+      try {
+        const res = await fetch('/set-project', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ project_path: newPath }) });
+        if (!res.ok) throw 0;
+        const result = await res.json();
+        qs('#currentProjectPath').textContent = result.current_project;
+        
+        // Update brand name
+        const project = availableProjects.find(p => p.path === newPath);
+        if (project) {
+          updateBrandName(project.name);
+        }
+        
+        await loadJobs();
+        const name = (availableProjects.find(p=>p.path===newPath)||{}).name || 'Unknown';
+        notify(`Switched to ${name}`);
+      } catch (e){ notify('Failed to switch project'); }
+    }
+
+    async function loadStats(){
+      try {
+        const res = await fetch('/stats');
+        if (!res.ok) throw 0;
+        const s = await res.json();
+        qs('#cpuStat').textContent = s.cpu;
+        qs('#memStat').textContent = s.memory.percent;
+        qs('#diskStat').textContent = s.disk.percent;
+        qs('#uptimeStat').textContent = formatUptime(s.uptime_sec);
+        const getNum = (v)=> typeof v === 'string' ? parseFloat(v) : (v||0);
+        pushHist('cpu', getNum(s.cpu));
+        pushHist('mem', getNum(s.memory.percent));
+        pushHist('disk', getNum(s.disk.percent));
+        pushHist('up', getNum(s.uptime_sec/3600));
+      } catch (e){ /* silent */ }
+    }
+
+    async function loadJobs(){
+      try {
+        const res = await fetch('/jobs');
+        if (!res.ok) throw 0;
+        const jobs = await res.json();
+        jobsCache = jobs;
+        renderJobs(jobs);
+        buildPalette(jobs);
+      } catch (e){ /* silent */ }
+    }
+
+    // --- Rendering ---
+    function determineJobType(jobKey, jobName){
+      const key = jobKey.toLowerCase();
+      const name = jobName.toLowerCase();
+      if (key.includes('build') || name.includes('build') || key.includes('compile')) return 'build';
+      if (key.includes('test') || name.includes('test')) return 'test';
+      if (key.includes('deploy') || name.includes('publish')) return 'deploy';
+      if (key.includes('analysis') || key.includes('analyze') || name.includes('analysis')) return 'analysis';
+      if (key.includes('security') || key.includes('scan')) return 'security';
+      if (key.includes('performance') || key.includes('perf')) return 'performance';
+      if (key.includes('doc')) return 'documentation';
+      if (key.includes('clean')) return 'cleanup';
+      return 'build';
+    }
+
+    function renderJobs(jobGroups){
+      const wrap = qs('#jobsSection');
+      wrap.innerHTML = '';
+
+      Object.entries(jobGroups).forEach(([groupName, groupData]) => {
+        const group = document.createElement('div');
+        group.className = 'job-group';
+        group.style.setProperty('--group-color', groupData.color);
+
+        const items = Object.entries(groupData.jobs);
+        const header = document.createElement('div');
+        header.className = 'group-header';
+        header.innerHTML = `<div class="group-title"><span class="icon">${groupData.icon}</span><h3>${groupName}</h3></div>
+                            <div class="count-badge" title="jobs in group">${items.length}</div>`;
+        header.addEventListener('click', ()=>{ group.classList.toggle('collapsed'); });
+
+        const desc = document.createElement('div');
+        desc.className = 'group-description';
+        desc.textContent = groupData.description;
+
+        const list = document.createElement('div');
+        list.className = 'job-items';
+
+        items.forEach(([jobKey, jobInfo]) => {
+          const status = jobStatuses[jobKey] || 'idle';
+          const el = document.createElement('div');
+          el.className = 'job-item';
+          el.dataset.status = status;
+          const jobType = determineJobType(jobKey, jobInfo.name);
+          const progressId = `p_${groupName}_${jobKey}`.replace(/[^a-z0-9_]/gi,'');
+
+          el.innerHTML = `
+            <div class="job-header">
+              <div class="job-title">
+                <span class="job-status-dot s-${status}"></span>
+                <span>${jobInfo.name} ${jobType === 'build' ? '🏗️' : jobType === 'test' ? '🧪' : jobType === 'deploy' ? '🚀' : jobType==='analysis' ? '🔍' : ''}</span>
+              </div>
+              <button class="instructions-btn" data-help>Instructions</button>
+            </div>
+            <div class="job-desc">${jobInfo.description}</div>
+            <div class="progress"><span id="${progressId}"></span></div>
+            <div class="progress-text" id="${progressId}_text">Ready</div>
+            <div class="job-actions">
+              <button class="btn btn-primary" data-run>${status==='running'?'⏳ Running…':'🚀 Run'}</button>
+              <button class="btn btn-secondary" data-log>📋 Log</button>
+            </div>
+          `;
+
+          el.querySelector('[data-help]').addEventListener('click', ()=> showInstructions(jobKey, groupName));
+          el.querySelector('[data-run]').addEventListener('click', ()=> runJob(jobKey, groupName, progressId, el));
+          el.querySelector('[data-log]').addEventListener('click', ()=> viewLog(jobKey));
+
+          list.appendChild(el);
+        });
+
+        group.appendChild(header);
+        group.appendChild(desc);
+        group.appendChild(list);
+        wrap.appendChild(group);
+      });
+    }
+
+    function renderJobStatus(jobKey, status){
+      jobStatuses[jobKey] = status;
+      if (Object.keys(jobsCache).length) renderJobs(jobsCache);
+    }
+
+    // --- Run / Instructions / Logs ---
+    async function runJob(jobKey, groupName, progressId){
+      renderJobStatus(jobKey, 'running');
+      const progressEl = progressId ? qs('#'+progressId) : null;
+      const textEl = progressId ? qs('#'+progressId+'_text') : null;
+      let pct = 0; let timer;
+      
+      if (progressEl && textEl){
+        textEl.textContent = '0% - Starting...';
+        timer = setInterval(()=>{
+          pct = clamp(pct + Math.random()*15, 0, 90);
+          progressEl.style.width = pct + '%';
+          textEl.textContent = `${Math.round(pct)}% - Processing...`;
+        }, 300);
+      }
+      
+      try {
+        const res = await fetch('/run', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ job_name: jobKey }) });
+        if (!res.ok){ throw new Error((await res.json()).detail || 'Failed'); }
+        const result = await res.json();
+        
+        if (progressEl){
+          progressEl.style.width = '100%';
+          if(textEl) textEl.textContent = '100% - Complete!';
+        }
+        
+        notify(result.message || 'Job started');
+        setTimeout(()=>{ renderJobStatus(jobKey, 'success'); }, 1200);
+      } catch (e){
+        renderJobStatus(jobKey, 'error');
+        if(textEl) textEl.textContent = 'Error occurred!';
+      }
+      finally { if (timer) clearInterval(timer); }
+    }
+
+    async function showInstructions(jobKey, groupName){
+      currentJob = { key: jobKey, group: groupName };
+      try {
+        const res = await fetch('/jobs');
+        const jobs = await res.json();
+        const info = jobs[groupName].jobs[jobKey];
+        qs('#instructionTitle').textContent = info.name;
+        qs('#instructionBody').innerHTML = `<p style="opacity:.9">${info.instruction}</p>`;
+        qs('#instructionModal').classList.add('open');
+      } catch(e){ /* ignore */ }
+    }
+
+    function closeInstruction(){ qs('#instructionModal').classList.remove('open'); }
+    qs('#closeInstruction').addEventListener('click', closeInstruction);
+    qs('#cancelInstruction').addEventListener('click', closeInstruction);
+    qs('#runFromInstructions').addEventListener('click', ()=>{ if (!currentJob) return; closeInstruction(); runJob(currentJob.key, currentJob.group); });
+
+    async function viewLog(jobKey){
+      qs('#logTitle').textContent = `Log: ${jobKey}`;
+      qs('#logOutput').textContent = 'Loading log output… 🔄';
+      qs('#logModal').classList.add('open');
+      try {
+        const res = await fetch(`/logs/${jobKey}`);
+        if (!res.ok) { qs('#logOutput').textContent = '⚠ Failed to load log'; return; }
+        const result = await res.json();
+        qs('#logOutput').textContent = result.error ? `⚠ ${result.error}` : (result.log_content || '📄 No log content available');
+      } catch(e){ qs('#logOutput').textContent = '💥 Error loading log'; }
+    }
+
+    qs('#closeLog').addEventListener('click', ()=> qs('#logModal').classList.remove('open'));
+
+    // --- Filters / Search ---
+    qsa('.pill[data-filter]').forEach(p => {
+      p.addEventListener('click', ()=>{
+        qsa('.pill[data-filter]').forEach(x=>x.classList.remove('active'));
+        p.classList.add('active');
+        const filter = p.dataset.filter;
+        if (filter === 'all') { qsa('.job-item').forEach(x=>x.style.display=''); return; }
+        qsa('.job-item').forEach(x=>{
+          const dot = x.querySelector('.job-status-dot');
+          const cls = dot.className;
+          const is = (filter==='running'&&cls.includes('s-running')) || (filter==='success'&&cls.includes('s-success')) || (filter==='error'&&cls.includes('s-error'));
+          x.style.display = is ? '' : 'none';
+        });
+      });
+    });
+
+    // Expand/Collapse All
+    qs('#expandAll').addEventListener('click', ()=> qsa('.job-group').forEach(g=> g.classList.remove('collapsed')));
+    qs('#collapseAll').addEventListener('click', ()=> qsa('.job-group').forEach(g=> g.classList.add('collapsed')));
+
+    // Header quick chips
+    qs('#filterRunning').addEventListener('click', ()=>{ qsa('.pill[data-filter]').forEach(x=> x.classList.remove('active')); const p = qsa('.pill[data-filter="running"]')[0]; p.classList.add('active'); p.click(); });
+    qs('#toggleCollapse').addEventListener('click', ()=>{ const anyOpen = qsa('.job-group:not(.collapsed)').length>0; if (anyOpen) qs('#collapseAll').click(); else qs('#expandAll').click(); });
+
+    // Local search (filters groups/items by text)
+    qs('#searchInput').addEventListener('input', (e)=>{
+      const q = e.target.value.trim().toLowerCase();
+      qsa('.job-group').forEach(group => {
+        const title = group.querySelector('.group-title h3').textContent.toLowerCase();
+        let visible = title.includes(q);
+        qsa('.job-item', group).forEach(item => {
+          const text = item.querySelector('.job-title span:nth-child(2)').textContent.toLowerCase() + ' ' + item.querySelector('.job-desc').textContent.toLowerCase();
+          const show = text.includes(q);
+          item.style.display = show ? '' : 'none';
+          if (show) visible = true;
+        });
+        group.style.display = visible ? '' : 'none';
+      });
+    });
+
+    // --- Command Palette ---
+    const palette = qs('#palette');
+    const paletteInput = qs('#paletteInput');
+    const paletteBody = qs('#paletteBody');
+
+    function openPalette(){ palette.classList.add('open'); paletteInput.value=''; renderPaletteItems(); paletteInput.focus(); }
+    function closePalette(){ palette.classList.remove('open'); }
+
+    qs('#openPalette').addEventListener('click', openPalette);
+
+    document.addEventListener('keydown', (e)=>{
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k'){ e.preventDefault(); openPalette(); }
+      if (e.key === 'Escape'){ if (palette.classList.contains('open')) closePalette(); qs('#logModal').classList.remove('open'); qs('#instructionModal').classList.remove('open'); }
+    });
+
+    palette.addEventListener('click', (e)=>{ if (e.target === palette) closePalette(); });
+
+    function buildPalette(jobs){
+      const cmds = [
+        { id:'refresh-stats', icon:'🔄', title:'Refresh Stats', hint:'Cmd' },
+        { id:'refresh-projects', icon:'📂', title:'Refresh Projects', hint:'Cmd' },
+        { id:'expand-all', icon:'⬇️', title:'Expand All', hint:'View' },
+        { id:'collapse-all', icon:'⬆️', title:'Collapse All', hint:'View' },
+      ];
+      const items = [];
+      Object.entries(jobs).forEach(([group, g]) => {
+        Object.entries(g.jobs).forEach(([key, j]) => {
+          items.push({ id:`job:${key}::${group}`, icon:g.icon, title:j.name, hint:group });
+        });
+      });
+      paletteBody.dataset.items = JSON.stringify({cmds, items});
+      renderPaletteItems();
+    }
+
+    function renderPaletteItems(){
+      const data = JSON.parse(paletteBody.dataset.items || '{"cmds":[],"items":[]}');
+      const q = (paletteInput.value || '').toLowerCase();
+      const section = (title, arr)=>`
+        <div class="palette-section">
+          <h4>${title}</h4>
+          ${arr.map((x)=>`<div class="palette-item" data-id="${x.id}" tabindex="0">\n            <div class="left"><span>${x.icon||'▫'}</span><div>${x.title}</div></div>\n            <div class="kbd-inline">${x.hint||''}</div>\n          </div>`).join('')}
+        </div>`;
+      const cmds = data.cmds.filter(c=> c.title.toLowerCase().includes(q));
+      const items = data.items.filter(c=> (c.title+' '+c.hint).toLowerCase().includes(q));
+      paletteBody.innerHTML = section('Commands', cmds) + section('Jobs', items);
+      qsa('.palette-item', paletteBody).forEach(el=> el.addEventListener('click', ()=> onPaletteSelect(el.dataset.id)));
+    }
+
+    paletteInput.addEventListener('input', renderPaletteItems);
+
+    function onPaletteSelect(id){
+      if (!id) return;
+      if (id === 'refresh-stats'){ loadStats(); closePalette(); return; }
+      if (id === 'refresh-projects'){ loadProjects(); closePalette(); return; }
+      if (id === 'expand-all'){ qs('#expandAll').click(); closePalette(); return; }
+      if (id === 'collapse-all'){ qs('#collapseAll').click(); closePalette(); return; }
+      if (id.startsWith('job:')){
+        const [ , jobKey, groupName ] = id.match(/^job:(.*)::(.*)$/) || [];
+        closePalette(); runJob(jobKey, groupName);
+      }
+    }
+
+    // --- Boot ---
+    window.addEventListener('DOMContentLoaded', async ()=>{
+      await loadProjects();
+      await loadStats();
+      await loadJobs();
+      setInterval(loadStats, 15000);
+      qs('#refreshProjectsBtn').addEventListener('click', ()=>{ loadProjects().then(()=> notify('Projects refreshed')); });
+      qs('#projectSelect').addEventListener('change', switchProject);
+    });
+  </script>
+</body>
+</html>
