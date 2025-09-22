@@ -1,6 +1,7 @@
 # 🚀 APIAI Hub
 
 A professional FastAPI-powered development automation server for iOS development. Built to streamline Xcode workflows, automate builds, and provide remote development control through a clean web interface.
+![APIAI Hub Dashboard](assets/preview.webp)
 
 ## ✨ Features
 
